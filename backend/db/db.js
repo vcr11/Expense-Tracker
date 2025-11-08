@@ -3,8 +3,8 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../config/config.env') });
 
 // Supabase configuration
-const supabaseUrl = 'https://khwvfsyismxehjdvzikq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtod3Zmc3lpc214ZWhqZHZ6aWtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MzcxNDMsImV4cCI6MjA3ODExMzE0M30.PYNK9dn3Vglw8pyECTDC2zDQF-81pL9jxKmM0oHQOVM';
+const supabaseUrl = '';
+const supabaseKey = 'Use Your Own Key';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
