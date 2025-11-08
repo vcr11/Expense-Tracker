@@ -5,7 +5,7 @@ import { signout } from '../../utils/Icons'
 import { menuItems } from '../../utils/menuItems'
 
 function Navigation({active, setActive}) {
-    
+
     return (
         <NavStyled>
             <div className="user-con">

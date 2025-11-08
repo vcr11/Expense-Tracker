@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useGlobalContext } from '../../context/globalContext';
 import History from '../../History/History';
@@ -7,12 +7,19 @@ import { dollar } from '../../utils/Icons';
 import Chart from '../Chart/Chart';
 
 function Dashboard() {
-    const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses } = useGlobalContext()
+    const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses, getBudgetSuggestions } = useGlobalContext()
+    const [suggestions, setSuggestions] = useState([])
 
     useEffect(() => {
         getIncomes()
         getExpenses()
+        fetchSuggestions()
     }, [])
+
+    const fetchSuggestions = async () => {
+        const sugg = await getBudgetSuggestions()
+        setSuggestions(sugg)
+    }
 
     return (
         <DashboardStyled>
@@ -62,6 +69,14 @@ function Dashboard() {
                                 ${Math.max(...expenses.map(item => item.amount))}
                             </p>
                         </div>
+                        <h2>Budget Suggestions</h2>
+                        <div className="suggestions">
+                            {suggestions.map((sugg, index) => (
+                                <div key={index} className="suggestion-item">
+                                    <p><strong>{sugg.category}:</strong> {sugg.suggestion}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </InnerLayout>
@@ -70,31 +85,95 @@ function Dashboard() {
 }
 
 const DashboardStyled = styled.div`
+    h1 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
     .stats-con{
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 2rem;
+
         .chart-con{
             grid-column: 1 / 4;
             height: 400px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+
+            &:hover {
+                transform: translateY(-5px);
+            }
+
             .amount-con{
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
                 gap: 2rem;
                 margin-top: 2rem;
+
                 .income, .expense{
                     grid-column: span 2;
                 }
+
                 .income, .expense, .balance{
-                    background: #FCF6F9;
-                    border: 2px solid #FFFFFF;
-                    box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
                     border-radius: 20px;
-                    padding: 1rem;
-                    p{
-                        font-size: 3.5rem;
-                        font-weight: 700;
+                    padding: 2rem;
+                    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                        transition: left 0.5s;
                     }
+
+                    &:hover::before {
+                        left: 100%;
+                    }
+
+                    &:hover {
+                        transform: translateY(-10px);
+                        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+                    }
+
+                    h2 {
+                        font-size: 1.2rem;
+                        margin-bottom: 1rem;
+                        opacity: 0.9;
+                    }
+
+                    p{
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                        margin: 0;
+                    }
+                }
+
+                .income {
+                    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                }
+
+                .expense {
+                    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
                 }
 
                 .balance{
@@ -103,10 +182,13 @@ const DashboardStyled = styled.div`
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
+                    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+
                     p{
-                        color: var(--color-green);
-                        opacity: 0.6;
-                        font-size: 4.5rem;
+                        color: #2c3e50;
+                        opacity: 1;
+                        font-size: 3rem;
+                        margin: 0;
                     }
                 }
             }
@@ -114,31 +196,84 @@ const DashboardStyled = styled.div`
 
         .history-con{
             grid-column: 4 / -1;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            color: white;
+
             h2{
                 margin: 1rem 0;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
+                font-size: 1.5rem;
+                font-weight: 600;
             }
+
             .salary-title{
-                font-size: 1.2rem;
+                font-size: 1rem;
+                margin-bottom: 1rem;
                 span{
-                    font-size: 1.8rem;
+                    font-size: 1.5rem;
+                    font-weight: 700;
                 }
             }
+
             .salary-item{
-                background: #FCF6F9;
-                border: 2px solid #FFFFFF;
-                box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-                padding: 1rem;
-                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                padding: 1.5rem;
+                border-radius: 15px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                margin-bottom: 1rem;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: scale(1.02);
+                }
+
                 p{
                     font-weight: 600;
-                    font-size: 1.6rem;
+                    font-size: 1.4rem;
+                    margin: 0;
                 }
+            }
+
+            .suggestions{
+                .suggestion-item{
+                    background: rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    padding: 1.5rem;
+                    border-radius: 15px;
+                    margin-bottom: 1rem;
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.3);
+                        transform: scale(1.02);
+                    }
+
+                    p{
+                        font-size: 1.2rem;
+                        margin: 0;
+                        line-height: 1.5;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .stats-con {
+            grid-template-columns: 1fr;
+            .chart-con {
+                grid-column: 1;
+            }
+            .history-con {
+                grid-column: 1;
             }
         }
     }

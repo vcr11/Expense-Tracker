@@ -1,50 +1,78 @@
-const IncomeSchema= require("../models/IncomeModel")
+const IncomeModel = require("../models/IncomeModel");
+const { asyncHandler, logger } = require('../middleware/errorHandler');
 
+/**
+ * @desc    Add a new income
+ * @route   POST /api/v1/add-income
+ * @access  Public
+ */
+exports.addIncome = asyncHandler(async (req, res) => {
+    const { title, amount, category, description, date } = req.body;
 
-exports.addIncome = async (req, res) => {
-    const {title, amount, category, description, date}  = req.body
+    logger.info(`Adding income: ${title} - $${amount}`);
 
-    const income = IncomeSchema({
+    const income = await IncomeModel.create({
         title,
-        amount,
+        amount: parseFloat(amount),
         category,
         description,
         date
-    })
+    });
 
-    try {
-        //validations
-        if(!title || !category || !description || !date){
-            return res.status(400).json({message: 'All fields are required!'})
-        }
-        if(amount <= 0 || !amount === 'number'){
-            return res.status(400).json({message: 'Amount must be a positive number!'})
-        }
-        await income.save()
-        res.status(200).json({message: 'Income Added'})
-    } catch (error) {
-        res.status(500).json({message: 'Server Error'})
+    logger.info(`Income added successfully: ${income.id}`);
+
+    res.status(201).json({
+        success: true,
+        message: 'Income added successfully',
+        data: income
+    });
+});
+
+/**
+ * @desc    Get all incomes
+ * @route   GET /api/v1/get-incomes
+ * @access  Public
+ */
+exports.getIncomes = asyncHandler(async (req, res) => {
+    const incomes = await IncomeModel.findAll();
+
+    logger.info(`Retrieved ${incomes.length} incomes`);
+
+    res.status(200).json({
+        success: true,
+        count: incomes.length,
+        data: incomes
+    });
+});
+
+/**
+ * @desc    Delete an income
+ * @route   DELETE /api/v1/delete-income/:id
+ * @access  Public
+ */
+exports.deleteIncome = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Valid income ID is required'
+        });
     }
 
-    console.log(income)
-}
+    const deleted = await IncomeModel.findByIdAndDelete(parseInt(id));
 
-exports.getIncomes = async (req, res) =>{
-    try {
-        const incomes = await IncomeSchema.find().sort({createdAt: -1})
-        res.status(200).json(incomes)
-    } catch (error) {
-        res.status(500).json({message: 'Server Error'})
+    if (!deleted) {
+        return res.status(404).json({
+            success: false,
+            message: 'Income not found'
+        });
     }
-}
 
-exports.deleteIncome = async (req, res) =>{
-    const {id} = req.params;
-    IncomeSchema.findByIdAndDelete(id)
-        .then((income) =>{
-            res.status(200).json({message: 'Income Deleted'})
-        })
-        .catch((err) =>{
-            res.status(500).json({message: 'Server Error'})
-        })
-}
+    logger.info(`Income deleted: ${id}`);
+
+    res.status(200).json({
+        success: true,
+        message: 'Income deleted successfully'
+    });
+});
