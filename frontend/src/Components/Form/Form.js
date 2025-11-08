@@ -12,7 +12,7 @@ function Form() {
     const [inputState, setInputState] = useState({
         title: '',
         amount: '',
-        date: '',
+        date: null,
         category: '',
         description: '',
     })
@@ -26,11 +26,16 @@ function Form() {
 
     const handleSubmit = e => {
         e.preventDefault()
-        addIncome(inputState)
+        // Convert date to string format for backend
+        const submitData = {
+            ...inputState,
+            date: date ? date.toISOString().split('T')[0] : ''
+        }
+        addIncome(submitData)
         setInputState({
             title: '',
             amount: '',
-            date: '',
+            date: null,
             category: '',
             description: '',
         })
@@ -57,13 +62,13 @@ function Form() {
                 />
             </div>
             <div className="input-control">
-                <DatePicker 
+                <DatePicker
                     id='date'
                     placeholderText='Enter A Date'
                     selected={date}
                     dateFormat="dd/MM/yyyy"
-                    onChange={(date) => {
-                        setInputState({...inputState, date: date})
+                    onChange={(selectedDate) => {
+                        setInputState({...inputState, date: selectedDate})
                     }}
                 />
             </div>

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react"
 import axios from 'axios'
 
 
-const BASE_URL = "http://localhost:5000/api/v1/";
+const BASE_URL = "http://localhost:5006/api/v1/";
 
 
 const GlobalContext = React.createContext()
@@ -24,7 +24,7 @@ export const GlobalProvider = ({children}) => {
 
     const getIncomes = async () => {
         const response = await axios.get(`${BASE_URL}get-incomes`)
-        setIncomes(response.data)
+        setIncomes(response.data.data || response.data)
         console.log(response.data)
     }
 
@@ -54,7 +54,7 @@ export const GlobalProvider = ({children}) => {
 
     const getExpenses = async () => {
         const response = await axios.get(`${BASE_URL}get-expenses`)
-        setExpenses(response.data)
+        setExpenses(response.data.data || response.data)
         console.log(response.data)
     }
 
@@ -70,6 +70,26 @@ export const GlobalProvider = ({children}) => {
         })
 
         return totalIncome;
+    }
+
+    const autoCategorizeExpense = async (title, description) => {
+        try {
+            const response = await axios.post(`${BASE_URL}auto-categorize-expense`, { title, description })
+            return response.data.category || response.data
+        } catch (err) {
+            setError(err.response?.data?.message || 'Error auto-categorizing')
+            return null
+        }
+    }
+
+    const getBudgetSuggestions = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}get-budget-suggestions`)
+            return response.data.data || response.data
+        } catch (err) {
+            setError(err.response?.data?.message || 'Error getting suggestions')
+            return []
+        }
     }
 
 
@@ -99,6 +119,8 @@ export const GlobalProvider = ({children}) => {
             getExpenses,
             deleteExpense,
             totalExpenses,
+            autoCategorizeExpense,
+            getBudgetSuggestions,
             totalBalance,
             transactionHistory,
             error,

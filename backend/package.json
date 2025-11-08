@@ -9,12 +9,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.80.0",
+    "better-sqlite3": "^12.4.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongodb": "^6.8.0",
-    "mongoose": "^6.9.1",
-    "nodemon": "^2.0.20"
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.0",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.1",
+    "nodemon": "^2.0.20",
+    "openai": "^6.8.1",
+    "sanitize-html": "^2.17.0",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "eslint": "^9.9.0",
