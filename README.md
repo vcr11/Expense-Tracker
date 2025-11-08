@@ -11,8 +11,6 @@
 
 **A production-ready, AI-enhanced personal finance management platform featuring conversational AI, intelligent categorization, predictive analytics, and comprehensive financial health scoring.**
 
-[🚀 Live Demo](#) • [📖 API Documentation](#api-endpoints) • [🛠️ Installation](#installation)
-
 </div>
 
 ---
